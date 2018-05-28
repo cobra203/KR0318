@@ -1,0 +1,8 @@
+!.gitignore
+battery_mcu/Debug/*
+*.dep
+battery_mcu/settings/*
+*.o
+*.d
+*.i
+
