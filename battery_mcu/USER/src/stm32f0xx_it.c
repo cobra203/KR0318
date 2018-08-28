@@ -37,6 +37,7 @@
 
 #include <debug.h>
 #include <battery_stat.h>
+#include <battery_tablet.h>
 #include <sys_pin_def.h>
 
 
@@ -181,7 +182,7 @@ void EXTI4_15_IRQHandler(void)
     }
 #endif
     else if(EXTI_GetITStatus(EXTI_Line8) != RESET) {
-        //pair_itc();
+        tablet_itc();
         EXTI_ClearITPendingBit(EXTI_Line8);
     }
 }

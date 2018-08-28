@@ -1991,6 +1991,12 @@
       <name>$PROJ_DIR$\USER\inc\battery_stat.h</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\USER\src\battery_tablet.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\USER\inc\battery_tablet.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\USER\src\button.c</name>
     </file>
     <file>

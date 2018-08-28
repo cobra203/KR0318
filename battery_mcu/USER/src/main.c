@@ -90,25 +90,23 @@ static void rcc_config(void)
     
     /* Enable GPIO Clock */
     RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);
-    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOB, ENABLE);
-    
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
-    
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);
-    //RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);
+    //RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOB, ENABLE);
 
-	//RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1,ENABLE);
+	/* Enable Syscfg Clock */
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
+
+	/* Enable SPI Clock */
+    //RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);
+    //RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);
 
 	/* GPIOC Periph clock enable */
 	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOC, ENABLE);
 	/* ADC1 Peripheral clock enable */
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1 , ENABLE);
-	
-    /* Set Flash Latency */
-    FLASH_PrefetchBufferCmd(ENABLE);
-    FLASH_SetLatency(FLASH_Latency_1);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);
 
-    
+	/* Set Flash Latency */
+	//FLASH_PrefetchBufferCmd(ENABLE);
+	//FLASH_SetLatency(FLASH_Latency_1);
 }
 
 /**

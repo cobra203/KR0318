@@ -48,6 +48,23 @@ static void _stat_register(void)
 	timer_task(&task, TMR_ONCE, 0, 0, _stat_server_start, STM_NULL);
 }
 
+static void _stat_charge_status_init(void)
+{
+	CP_SYS_S *cp_sys = battery_pair.cp_sys;
+
+	uint16_t gpio_vol = GPIO_ReadInputData(STAT_GPIO);
+	
+	STM_BOOL charge = (~gpio_vol) & STAT_PIN ? 1 : 0;
+
+	if(STM_TRUE == charge) {
+		cp_sys->sys_evt.charge_into = STM_TRUE;
+	}
+	else {
+		cp_sys->sys_evt.charge_out_of = STM_TRUE;
+	}
+}
+
+
 void stat_init(CP_SYS_S *cp_sys)
 { 
     GPIO_InitTypeDef    init_struct = {0};
@@ -66,8 +83,9 @@ void stat_init(CP_SYS_S *cp_sys)
     battery_pair.stat.interval.focused  = 100;
 
     battery_pair.process	= _stat_process;
-    cp_sys->stat		= &battery_pair;
+    cp_sys->stat			= &battery_pair;
 
+	_stat_charge_status_init();
 	_stat_register();
 }
 

@@ -2,6 +2,7 @@
 #include <stm32_timer.h>
 #include <battery_led.h>
 #include <battery_stat.h>
+#include <battery_tablet.h>
 #include <battery_power.h>
 #include <sys_common.h>
 #include <debug.h>
@@ -15,6 +16,13 @@ static void sys_exti_init(void)
     
     SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOA, EXTI_PinSource2);
     exti_cfg.EXTI_Line      = EXTI_Line2;
+    exti_cfg.EXTI_Mode      = EXTI_Mode_Interrupt;
+    exti_cfg.EXTI_Trigger   = EXTI_Trigger_Rising_Falling;
+    exti_cfg.EXTI_LineCmd   = ENABLE;
+    EXTI_Init(&exti_cfg);
+
+	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOA, EXTI_PinSource8);
+    exti_cfg.EXTI_Line      = EXTI_Line8;
     exti_cfg.EXTI_Mode      = EXTI_Mode_Interrupt;
     exti_cfg.EXTI_Trigger   = EXTI_Trigger_Rising_Falling;
     exti_cfg.EXTI_LineCmd   = ENABLE;
@@ -36,15 +44,30 @@ void cp_sys_handle(void *args)
 	CP_SYS_S	*cp_sys = (CP_SYS_S *)args;
 	uint8_t		task;
 
+	
+	if(STM_TRUE == cp_sys->sys_evt.tablet_into) {
+		cp_sys->leds->restart();
+		cp_sys->sys_evt.tablet_into = STM_FALSE;
+	}
+
+	if(STM_TRUE == cp_sys->sys_evt.tablet_out_of) {
+		cp_sys->leds->stop();
+		cp_sys->sys_evt.tablet_out_of = STM_FALSE;
+	}
+
 	if(STM_TRUE == cp_sys->sys_evt.charge_into) {
 		cp_sys->leds->vbat_status.charge = STM_TRUE;
-		cp_sys->leds->restart();
+		if(STM_TRUE == cp_sys->tablet->work) {
+			cp_sys->leds->restart();
+		}
 		cp_sys->sys_evt.charge_into = STM_FALSE;
 	}
 
 	if(STM_TRUE == cp_sys->sys_evt.charge_out_of) {
 		cp_sys->leds->vbat_status.charge = STM_FALSE;
-		cp_sys->leds->restart();
+		if(STM_TRUE == cp_sys->tablet->work) {
+			cp_sys->leds->restart();
+		}
 		cp_sys->sys_evt.charge_out_of = STM_FALSE;
 	}
 
@@ -70,6 +93,7 @@ void cp_sys_init(void)
     
     led_init(&cp_sys);
     stat_init(&cp_sys);
+	tablet_init(&cp_sys);
 	power_init(&cp_sys);
 
 	cp_sys_register();

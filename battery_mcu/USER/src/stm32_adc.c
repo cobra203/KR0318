@@ -45,7 +45,5 @@ void stm32_adc_init(STM32_ADC_S *adc, uint16_t pin, GPIO_TypeDef *port)
 
 	/* Wait the ADRDY flag */
 	while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_ADRDY));
-
-	while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_ADEN));
 }
 

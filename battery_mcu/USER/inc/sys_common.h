@@ -21,8 +21,10 @@
 #define		STM_NULL		((void *)0)
 #define		STM_BOOL		uint8_t
 
-#define		CUT_OFF_VOLTAGE	7400/3
-#define		FULL_VOLTAGE	8400/3
+#define		CUT_OFF_VOLTAGE	100000/57
+#define		FULL_VOLTAGE	126000/57
+
+#define		CHARGE_VOLTAGE_DETECT_ENABLE	STM_FALSE
 
 typedef enum battery_led_type_e
 {

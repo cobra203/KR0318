@@ -45,6 +45,7 @@ typedef struct battery_led_s
     STM32_LED_S     com_led[COM_LED_NUM];
     void            (*set)		(struct battery_led_s *, uint8_t, LED_STATUS_E);
 	void			(*restart)	(void);
+	void			(*stop)		(void);
 } BATTERY_LED_S;
 
 

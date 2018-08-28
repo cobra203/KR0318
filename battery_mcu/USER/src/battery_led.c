@@ -69,13 +69,20 @@ static void _led_server_start(void *args)
 {
 	LED_INDEX_E	next	= LED_ID_COM1;
 	int			delay	= (int)args;
+	uint16_t	power	= leds.vbat_status.power;
 
 	leds.set(&leds, LED_ID_RED, LED_STATUS_CLOSED);
 	leds.set(&leds, LED_ID_COM1, LED_STATUS_CLOSED);
 	leds.set(&leds, LED_ID_COM2, LED_STATUS_CLOSED);
 	leds.set(&leds, LED_ID_COM3, LED_STATUS_CLOSED);
-	
-	if(leds.vbat_status.power < 25) {
+
+#if (CHARGE_VOLTAGE_DETECT_ENABLE != STM_TRUE)
+	if(leds.vbat_status.charge == STM_TRUE) {
+		power = 0;
+	}
+#endif
+
+	if(power < 25) {
 		if(!leds.vbat_status.charge) {
 			timer_task(&leds.task_id, TMR_ONCE, 200, 0, _led_vbat_low, STM_NULL);
 			return;
@@ -86,12 +93,12 @@ static void _led_server_start(void *args)
 		next++;
 	}
 
-	if(leds.vbat_status.power >= 50) {
+	if(power >= 50) {
 		leds.set(&leds, LED_ID_COM2, LED_STATUS_CONNECT);
 		next++;
 	}
 
-	if(leds.vbat_status.power >= 75) {
+	if(power >= 75) {
 		if(!leds.vbat_status.charge) {
 			leds.set(&leds, LED_ID_COM3, LED_STATUS_CONNECT);
 		}
@@ -115,6 +122,15 @@ void _led_restart(void)
 	_led_register();
 }
 
+void _led_stop(void)
+{
+	timer_free(&leds.task_id);
+	leds.set(&leds, LED_ID_RED, LED_STATUS_CLOSED);
+	leds.set(&leds, LED_ID_COM1, LED_STATUS_CLOSED);
+	leds.set(&leds, LED_ID_COM2, LED_STATUS_CLOSED);
+	leds.set(&leds, LED_ID_COM3, LED_STATUS_CLOSED);
+}
+
 void led_init(CP_SYS_S *cp_sys)
 {
     int i = 0;
@@ -125,6 +141,7 @@ void led_init(CP_SYS_S *cp_sys)
     cp_sys->leds	= &leds;
 	leds.set        = _led_status_set;
 	leds.restart	= _led_restart;
+	leds.stop		= _led_stop;
 
 	_led_id_transform(LED_ID_RED, &pin, &port);
     leds.red_led.init = stm32_led_init;

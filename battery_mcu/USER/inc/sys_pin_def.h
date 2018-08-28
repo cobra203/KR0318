@@ -16,15 +16,18 @@
 #define VBAT_PIN			GPIO_Pin_0
 #define VBAT_GPIO			GPIOA
 
+#define TABLET_PIN			GPIO_Pin_8
+#define TABLET_GPIO			GPIOA
+
 #if (VERSION == VER_RELEASE)
 #define LED_PIN_RED			GPIO_Pin_12
 #define LED_PIN_COM1        GPIO_Pin_11
 #define LED_PIN_COM2        GPIO_Pin_10
 #define LED_PIN_COM3        GPIO_Pin_9
 #elif (VERSION == VER_DEBUG)
-#define LED_PIN_RED			GPIO_Pin_12
-#define LED_PIN_COM1        GPIO_Pin_11
-#define LED_PIN_COM2        GPIO_Pin_10
+#define LED_PIN_RED			GPIO_Pin_10
+#define LED_PIN_COM1        GPIO_Pin_10
+#define LED_PIN_COM2        GPIO_Pin_11
 #define LED_PIN_COM3        GPIO_Pin_9
 #endif
 
