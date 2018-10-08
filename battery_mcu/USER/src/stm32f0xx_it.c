@@ -38,6 +38,7 @@
 #include <debug.h>
 #include <battery_stat.h>
 #include <battery_tablet.h>
+#include <battery_supply.h>
 #include <sys_pin_def.h>
 
 
@@ -164,12 +165,6 @@ void EXTI2_3_IRQHandler(void)
 
 void EXTI4_15_IRQHandler(void)
 {
-    if(EXTI_GetITStatus(EXTI_Line4) != RESET) {                        
-        //__disable_irq();
-        //spi_itc();
-        //__enable_irq();
-        EXTI_ClearITPendingBit(EXTI_Line4);
-    }
 #if 0
     else if(EXTI_GetITStatus(EXTI_Line5) != RESET) {
         if(Bit_SET == GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_5)) {
@@ -181,9 +176,13 @@ void EXTI4_15_IRQHandler(void)
         EXTI_ClearITPendingBit(EXTI_Line5);
     }
 #endif
-    else if(EXTI_GetITStatus(EXTI_Line8) != RESET) {
+    if(EXTI_GetITStatus(EXTI_Line8) != RESET) {
         tablet_itc();
         EXTI_ClearITPendingBit(EXTI_Line8);
+    }
+	if(EXTI_GetITStatus(EXTI_Line12) != RESET) {
+        supply_itc();
+        EXTI_ClearITPendingBit(EXTI_Line12);
     }
 }
 #if 0

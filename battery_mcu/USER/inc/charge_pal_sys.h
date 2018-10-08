@@ -25,6 +25,7 @@ typedef struct charge_pal_sys_s
     struct battery_stat_s	*stat;
     struct battery_led_s    *leds;
     struct battery_power_s	*power;
+	struct battery_supply_s	*supply;
 } CP_SYS_S;
 
 void cp_sys_init(void);

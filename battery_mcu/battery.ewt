@@ -272,6 +272,12 @@
       <name>$PROJ_DIR$\USER\inc\battery_stat.h</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\USER\src\battery_supply.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\USER\inc\battery_supply.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\USER\src\battery_tablet.c</name>
     </file>
     <file>

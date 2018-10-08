@@ -19,6 +19,12 @@
 #define TABLET_PIN			GPIO_Pin_8
 #define TABLET_GPIO			GPIOA
 
+#define SUPPLY_DET_PIN		GPIO_Pin_12
+#define SUPPLY_DET_GPIO		GPIOA
+
+#define SUPPLY_PIN			GPIO_Pin_1
+#define SUPPLY_GPIO			GPIOA
+
 #if (VERSION == VER_RELEASE)
 #define LED_PIN_RED			GPIO_Pin_12
 #define LED_PIN_COM1        GPIO_Pin_11

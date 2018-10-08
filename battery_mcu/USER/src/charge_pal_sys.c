@@ -4,6 +4,7 @@
 #include <battery_stat.h>
 #include <battery_tablet.h>
 #include <battery_power.h>
+#include <battery_supply.h>
 #include <sys_common.h>
 #include <debug.h>
 
@@ -23,6 +24,13 @@ static void sys_exti_init(void)
 
 	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOA, EXTI_PinSource8);
     exti_cfg.EXTI_Line      = EXTI_Line8;
+    exti_cfg.EXTI_Mode      = EXTI_Mode_Interrupt;
+    exti_cfg.EXTI_Trigger   = EXTI_Trigger_Rising_Falling;
+    exti_cfg.EXTI_LineCmd   = ENABLE;
+    EXTI_Init(&exti_cfg);
+
+	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOA, EXTI_PinSource12);
+    exti_cfg.EXTI_Line      = EXTI_Line12;
     exti_cfg.EXTI_Mode      = EXTI_Mode_Interrupt;
     exti_cfg.EXTI_Trigger   = EXTI_Trigger_Rising_Falling;
     exti_cfg.EXTI_LineCmd   = ENABLE;
@@ -95,6 +103,7 @@ void cp_sys_init(void)
     stat_init(&cp_sys);
 	tablet_init(&cp_sys);
 	power_init(&cp_sys);
+	supply_init(&cp_sys);
 
 	cp_sys_register();
 }

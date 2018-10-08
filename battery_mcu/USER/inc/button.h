@@ -40,6 +40,7 @@ typedef struct button_s
 {
     BTN_STATE_S     state;
     BTN_INTERVAL_S  interval;
+	uint8_t			detect_count;
     int             (*check_active)(struct button_s *);
 } BUTTON_S;
 

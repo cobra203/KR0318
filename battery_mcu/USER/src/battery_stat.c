@@ -32,10 +32,22 @@ static void _stat_process(BATTERY_STAT_S *stat)
     }
 }
 
+static void _stat_pin_detect(void)
+{
+	uint16_t gpio_vol;
+
+	if(battery_pair.stat.detect_count) {
+		gpio_vol = GPIO_ReadInputData(STAT_GPIO);
+		battery_pair.stat.state.press = (~gpio_vol) & STAT_PIN ? 1 : 0;
+		battery_pair.stat.detect_count--;
+	}
+}
+
 static void _stat_server_start(void *args)
 {
 	uint8_t task;
-	
+
+	_stat_pin_detect();
 	battery_pair.stat.check_active(&battery_pair.stat);
     battery_pair.process(&battery_pair);
 	
@@ -48,22 +60,10 @@ static void _stat_register(void)
 	timer_task(&task, TMR_ONCE, 0, 0, _stat_server_start, STM_NULL);
 }
 
-static void _stat_charge_status_init(void)
+void stat_itc(void)
 {
-	CP_SYS_S *cp_sys = battery_pair.cp_sys;
-
-	uint16_t gpio_vol = GPIO_ReadInputData(STAT_GPIO);
-	
-	STM_BOOL charge = (~gpio_vol) & STAT_PIN ? 1 : 0;
-
-	if(STM_TRUE == charge) {
-		cp_sys->sys_evt.charge_into = STM_TRUE;
-	}
-	else {
-		cp_sys->sys_evt.charge_out_of = STM_TRUE;
-	}
+	battery_pair.stat.detect_count = 10;
 }
-
 
 void stat_init(CP_SYS_S *cp_sys)
 { 
@@ -85,14 +85,7 @@ void stat_init(CP_SYS_S *cp_sys)
     battery_pair.process	= _stat_process;
     cp_sys->stat			= &battery_pair;
 
-	_stat_charge_status_init();
+	stat_itc();
 	_stat_register();
 }
 
-
-void stat_itc(void)
-{
-    uint16_t gpio_vol = GPIO_ReadInputData(STAT_GPIO);
-
-    battery_pair.stat.state.press = (~gpio_vol) & STAT_PIN ? 1 : 0;
-}
