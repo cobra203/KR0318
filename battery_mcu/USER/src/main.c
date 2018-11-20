@@ -29,13 +29,14 @@
 #include <stm32f0xx_rcc.h>
 #include <core_cm0.h>
 #include <stm32f0xx_misc.h>
+#include <stm32f0xx_iwdg.h>
 
 #include <debug.h>
 //#include <cc85xx_pair.h>
 
 #include <stm32_timer.h>
 #include <charge_pal_sys.h>
-
+#include <battery_led.h>
 
 /** @addtogroup STM32F0xx_StdPeriph_Templates
   * @{
@@ -64,7 +65,10 @@ static void rcc_config(void)
         RCC_PLLConfig(RCC_PLLSource_PREDIV1, RCC_PLLMul_2);
         RCC_PLLCmd(ENABLE);
     }
-#endif        
+#endif
+	/* enable LSI to iwwdg */
+	RCC_LSICmd(ENABLE);
+
     //DEBUG("HSE Start Up Fail, Use HSI\n");
     RCC_HSEConfig(RCC_HSE_OFF);
 
@@ -109,6 +113,24 @@ static void rcc_config(void)
 	//FLASH_SetLatency(FLASH_Latency_1);
 }
 
+void wdg_init(void)
+{
+	if(RCC_GetFlagStatus(RCC_FLAG_IWDGRST)) {
+		RCC_ClearFlag();
+	}
+
+	IWDG_WriteAccessCmd(IWDG_WriteAccess_Enable);
+	IWDG_SetPrescaler(IWDG_Prescaler_32);
+	IWDG_SetReload(125); //100ms
+	IWDG_ReloadCounter();
+	IWDG_Enable();
+}
+
+void wdt_feed(void)
+{
+	IWDG_ReloadCounter();
+}
+
 /**
   * @brief  Main program.
   * @param  None
@@ -129,10 +151,12 @@ int main(void)
      */
     rcc_config();
     cp_sys_init();
+	wdg_init();
 
     /* Infinite loop */
 	while(1) {
 		timer_task_process();
+		wdt_feed();
 	}
 }
 

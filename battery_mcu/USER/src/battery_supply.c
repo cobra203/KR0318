@@ -37,7 +37,7 @@ static void _supply_process(BATTERY_SUPPLY_S *supply)
 			if(STM_FALSE == supply->into) {
 				supply->into = STM_TRUE;
 				//_supply_exec(STM_NULL);
-				timer_task(&battery_supply.task, TMR_ONCE, 5000, 0, _supply_exec, STM_NULL);
+				timer_task(&battery_supply.task, TMR_ONCE, SUPPLY_DELAY_MS, 0, _supply_exec, STM_NULL);
 			}
 			break;
 		default:

@@ -1943,6 +1943,9 @@
       <name>$PROJ_DIR$\FWlib\inc\stm32f0xx_gpio.h</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\FWlib\src\stm32f0xx_iwdg.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\FWlib\src\stm32f0xx_misc.c</name>
     </file>
     <file>
