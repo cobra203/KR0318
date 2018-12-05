@@ -12,6 +12,8 @@ static int timer_alloc(uint8_t *timer)
 
     for(i = 0; i < TIMERS_NUM; i++, active >>= 1) {
         if(!(active & 0x1)) {
+			basic_timer.delay_count[i] = 100;
+			BIT_SET(basic_timer.active, i);
             *timer = i;
             return 0;
         }
@@ -67,12 +69,17 @@ void timer_itc(void)
     uint16_t    active = basic_timer.active;
 
     for(i = 0; i < TIMERS_NUM; i++, active >>= 1) {
-        if(active & 0x1 && basic_timer.delay_count[i]) {
-            basic_timer.delay_count[i]--;
-            if(!basic_timer.delay_count[i]) {
-                BIT_SET(basic_timer.touch, i);
-            }
-        }
+        if(active & 0x1) {
+			if(basic_timer.delay_count[i]) {
+				basic_timer.delay_count[i]--;
+	            if(!basic_timer.delay_count[i]) {
+	                BIT_SET(basic_timer.touch, i);
+	            }
+			}
+			else if(!basic_timer.touch) {
+				assert_param(0);//timer error reboot
+			}
+		}
     }
 }
 
@@ -124,8 +131,6 @@ void timer_task(uint8_t *timer, TIMER_TYPE_E type, uint32_t delay, uint32_t load
     basic_timer.callback_args[*timer]   = args;
     basic_timer.delay_reload[*timer]    = load;
     basic_timer.delay_count[*timer]     = delay ? delay : 1;
-    
-    BIT_SET(basic_timer.active, *timer);
 }
 
 void timer_task_process(void)

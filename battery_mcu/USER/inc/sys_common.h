@@ -24,14 +24,8 @@
 #define		CUT_OFF_VOLTAGE	100000/57
 #define		FULL_VOLTAGE	126000/57
 
-#define		CHARGE_VOLTAGE_DETECT_ENABLE	STM_FALSE
-
-typedef enum battery_led_type_e
-{
-    LED_TYPE_RED = 0,  
-    LED_TYPE_COM,
-    LED_TYPE_BUTT,
-} BATTERY_LED_TYPE_E;
+#define		CHARGE_VOLTAGE_DETECT_ENABLE		STM_FALSE
+#define		LED_CLOSE_WHEN_OUT_OF_CHARGE		STM_FALSE
 
 #ifdef __cplusplus
 }

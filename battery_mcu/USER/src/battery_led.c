@@ -142,6 +142,7 @@ void led_init(CP_SYS_S *cp_sys)
 	leds.set        = _led_status_set;
 	leds.restart	= _led_restart;
 	leds.stop		= _led_stop;
+	leds.task_id	= TIMERS_NUM;
 
 	_led_id_transform(LED_ID_RED, &pin, &port);
     leds.red_led.init = stm32_led_init;

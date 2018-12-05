@@ -37,7 +37,7 @@ static void _power_vbat_get(BATTERY_POWER_S *power)
 
 static void _power_handle(void *args)
 {
-	uint8_t task;
+	uint8_t task = TIMERS_NUM;
 
 	power.vbat_get(&power);
 
@@ -46,7 +46,7 @@ static void _power_handle(void *args)
 
 static void _power_register(void)
 {
-	uint8_t task;
+	uint8_t task = TIMERS_NUM;
 
 	timer_task(&task, TMR_ONCE, 0, 0, _power_handle, STM_NULL);
 }

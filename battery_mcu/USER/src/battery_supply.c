@@ -17,6 +17,8 @@ static void _supply_exec(void *args)
 	else {
 		GPIO_ResetBits(SUPPLY_GPIO, SUPPLY_PIN);
 	}
+
+	battery_supply.task = TIMERS_NUM;
 }
 
 static void _supply_process(BATTERY_SUPPLY_S *supply)
@@ -25,7 +27,7 @@ static void _supply_process(BATTERY_SUPPLY_S *supply)
         
 		switch(supply->detect.state.effective) {
 		case ECT_LOOSE:
-			DEBUG("ect[%d]\n", supply->detect.state.effective);
+			DEBUG("supply:ect[%d]\n", supply->detect.state.effective);
 			supply->into = STM_FALSE;
 			if(TIMERS_NUM != battery_supply.task) {
 				timer_free(&battery_supply.task);
@@ -33,7 +35,7 @@ static void _supply_process(BATTERY_SUPPLY_S *supply)
 			_supply_exec(STM_NULL);
 			break;
 		case ECT_PRESSED:
-			DEBUG("ect[%d]\n", supply->detect.state.effective);
+			DEBUG("supply:ect[%d]\n", supply->detect.state.effective);
 			if(STM_FALSE == supply->into) {
 				supply->into = STM_TRUE;
 				//_supply_exec(STM_NULL);
@@ -60,7 +62,7 @@ static void _supply_pin_detect(void)
 
 static void _supply_server_start(void *args)
 {
-	uint8_t task;
+	uint8_t task = TIMERS_NUM;
 
 	_supply_pin_detect();
 	battery_supply.detect.check_active(&battery_supply.detect);
@@ -71,7 +73,7 @@ static void _supply_server_start(void *args)
 
 static void _supply_register(void)
 {
-	uint8_t task;
+	uint8_t task = TIMERS_NUM;
 	timer_task(&task, TMR_ONCE, 0, 0, _supply_server_start, STM_NULL);
 }
 

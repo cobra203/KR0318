@@ -8,7 +8,7 @@
 #define VER_RELEASE         0
 #define VER_DEBUG			1
 
-#define VERSION VER_DEBUG
+#define VERSION				VER_DEBUG
 
 #define STAT_PIN			GPIO_Pin_2      /* fixed */
 #define STAT_GPIO           GPIOA
@@ -28,9 +28,9 @@
 #define SUPPLY_DELAY_MS		3000
 
 #if (VERSION == VER_RELEASE)
-#define LED_PIN_RED			GPIO_Pin_12
-#define LED_PIN_COM1        GPIO_Pin_11
-#define LED_PIN_COM2        GPIO_Pin_10
+#define LED_PIN_RED			GPIO_Pin_15
+#define LED_PIN_COM1        GPIO_Pin_10
+#define LED_PIN_COM2        GPIO_Pin_11
 #define LED_PIN_COM3        GPIO_Pin_9
 #elif (VERSION == VER_DEBUG)
 #define LED_PIN_RED			GPIO_Pin_10

@@ -18,11 +18,11 @@ static void _stat_process(BATTERY_STAT_S *stat)
         
 		switch(stat->stat.state.effective) {
 		case ECT_LOOSE:
-			DEBUG("ect[%d]\n", stat->stat.state.effective);
+			DEBUG("stat:ect[%d]\n", stat->stat.state.effective);
 			cp_sys->sys_evt.charge_out_of = STM_TRUE;
 			break;
 		case ECT_PRESSED:
-			DEBUG("ect[%d]\n", stat->stat.state.effective);
+			DEBUG("stat:ect[%d]\n", stat->stat.state.effective);
 			cp_sys->sys_evt.charge_into = STM_TRUE;
 			break;
 		default:
@@ -45,7 +45,7 @@ static void _stat_pin_detect(void)
 
 static void _stat_server_start(void *args)
 {
-	uint8_t task;
+	uint8_t task = TIMERS_NUM;
 
 	_stat_pin_detect();
 	battery_pair.stat.check_active(&battery_pair.stat);
@@ -56,7 +56,7 @@ static void _stat_server_start(void *args)
 
 static void _stat_register(void)
 {
-	uint8_t task;
+	uint8_t task = TIMERS_NUM;
 	timer_task(&task, TMR_ONCE, 0, 0, _stat_server_start, STM_NULL);
 }
 

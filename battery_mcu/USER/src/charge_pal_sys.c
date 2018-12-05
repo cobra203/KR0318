@@ -50,32 +50,43 @@ static void sys_exti_init(void)
 void cp_sys_handle(void *args)
 {
 	CP_SYS_S	*cp_sys = (CP_SYS_S *)args;
-	uint8_t		task;
+	uint8_t		task = TIMERS_NUM;
 
-	
 	if(STM_TRUE == cp_sys->sys_evt.tablet_into) {
+#if (LED_CLOSE_WHEN_OUT_OF_CHARGE == STM_TRUE)
 		cp_sys->leds->restart();
+#endif
 		cp_sys->sys_evt.tablet_into = STM_FALSE;
 	}
 
 	if(STM_TRUE == cp_sys->sys_evt.tablet_out_of) {
+#if (LED_CLOSE_WHEN_OUT_OF_CHARGE == STM_TRUE)
 		cp_sys->leds->stop();
+#endif
 		cp_sys->sys_evt.tablet_out_of = STM_FALSE;
 	}
 
 	if(STM_TRUE == cp_sys->sys_evt.charge_into) {
 		cp_sys->leds->vbat_status.charge = STM_TRUE;
+#if (LED_CLOSE_WHEN_OUT_OF_CHARGE == STM_TRUE)
 		if(STM_TRUE == cp_sys->tablet->work) {
 			cp_sys->leds->restart();
 		}
+#else
+		cp_sys->leds->restart();
+#endif
 		cp_sys->sys_evt.charge_into = STM_FALSE;
 	}
 
 	if(STM_TRUE == cp_sys->sys_evt.charge_out_of) {
 		cp_sys->leds->vbat_status.charge = STM_FALSE;
+#if (LED_CLOSE_WHEN_OUT_OF_CHARGE == STM_TRUE)
 		if(STM_TRUE == cp_sys->tablet->work) {
 			cp_sys->leds->restart();
 		}
+#else
+		cp_sys->leds->restart();
+#endif
 		cp_sys->sys_evt.charge_out_of = STM_FALSE;
 	}
 
@@ -89,7 +100,7 @@ void cp_sys_handle(void *args)
 
 void cp_sys_register(void)
 {
-	uint8_t task;
+	uint8_t task = TIMERS_NUM;
 
 	timer_task(&task, TMR_ONCE, 10, 0, cp_sys_handle, (void *)&cp_sys);
 }
