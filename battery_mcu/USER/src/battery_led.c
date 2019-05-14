@@ -1,6 +1,6 @@
 #include <battery_led.h>
 #include <stm32_led.h>
-#include <sys_pin_def.h>
+#include <sys_common.h>
 #include <debug.h>
 #include <stm32_timer.h>
 

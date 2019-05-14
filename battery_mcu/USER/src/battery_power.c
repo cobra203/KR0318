@@ -1,7 +1,7 @@
 #include <battery_power.h>
 #include <debug.h>
 #include <stm32_timer.h>
-#include <sys_pin_def.h>
+#include <sys_common.h>
 
 static BATTERY_POWER_S power;
 

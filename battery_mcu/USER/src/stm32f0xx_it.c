@@ -39,8 +39,7 @@
 #include <battery_stat.h>
 #include <battery_tablet.h>
 #include <battery_supply.h>
-#include <sys_pin_def.h>
-
+#include <sys_common.h>
 
 /** @addtogroup Template_Project
   * @{
@@ -161,6 +160,12 @@ void EXTI2_3_IRQHandler(void)
         stat_itc();
         EXTI_ClearITPendingBit(EXTI_Line2);
     }
+#if (SUPPLY_EXTI_RANGE == EXTI_RANGE_2_3)
+	if(EXTI_GetITStatus(SUPPLY_EXTI_LINE) != RESET) {
+        supply_itc();
+        EXTI_ClearITPendingBit(SUPPLY_EXTI_LINE);
+    }
+#endif
 }
 
 void EXTI4_15_IRQHandler(void)
@@ -180,10 +185,12 @@ void EXTI4_15_IRQHandler(void)
         tablet_itc();
         EXTI_ClearITPendingBit(EXTI_Line8);
     }
-	if(EXTI_GetITStatus(EXTI_Line12) != RESET) {
+#if (SUPPLY_EXTI_RANGE == EXTI_RANGE_4_15)
+	if(EXTI_GetITStatus(SUPPLY_EXTI_LINE) != RESET) {
         supply_itc();
-        EXTI_ClearITPendingBit(EXTI_Line12);
+        EXTI_ClearITPendingBit(SUPPLY_EXTI_LINE);
     }
+#endif
 }
 #if 0
 void SPI1_IRQHandler(void)

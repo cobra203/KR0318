@@ -2,10 +2,8 @@
 
 #include <battery_supply.h>
 #include <debug.h>
-#include <sys_pin_def.h>
 #include <sys_common.h>
 #include <stm32_timer.h>
-
 
 static BATTERY_SUPPLY_S	battery_supply;
 
@@ -21,30 +19,56 @@ static void _supply_exec(void *args)
 	battery_supply.task = TIMERS_NUM;
 }
 
+static void _supply_switch(void)
+{
+	battery_supply.into = battery_supply.into ? STM_FALSE : STM_TRUE;
+
+	if(battery_supply.into) {
+		GPIO_SetBits(SUPPLY_GPIO, SUPPLY_PIN);
+	}
+	else {
+		GPIO_ResetBits(SUPPLY_GPIO, SUPPLY_PIN);
+	}
+}
+
 static void _supply_process(BATTERY_SUPPLY_S *supply)
-{ 
+{
+	static int last_status = ECT_LOOSE;
+
     if(supply->detect.state.avtice) {
         
 		switch(supply->detect.state.effective) {
 		case ECT_LOOSE:
 			DEBUG("supply:ect[%d]\n", supply->detect.state.effective);
+#if (SUPPLY_FUNC_MODE == SUPPLY_MODE_BUTTON)
+			if(last_status == ECT_PRESSED) {
+				_supply_switch();
+			}
+#elif (SUPPLY_FUNC_MODE == SUPPLY_MODE_DETECT)
 			supply->into = STM_FALSE;
 			if(TIMERS_NUM != battery_supply.task) {
 				timer_free(&battery_supply.task);
 			}
 			_supply_exec(STM_NULL);
+#endif
 			break;
 		case ECT_PRESSED:
 			DEBUG("supply:ect[%d]\n", supply->detect.state.effective);
+
+#if (SUPPLY_FUNC_MODE == SUPPLY_MODE_BUTTON)
+			__asm("NOP");
+#elif (SUPPLY_FUNC_MODE == SUPPLY_MODE_DETECT)
 			if(STM_FALSE == supply->into) {
 				supply->into = STM_TRUE;
 				//_supply_exec(STM_NULL);
 				timer_task(&battery_supply.task, TMR_ONCE, SUPPLY_DELAY_MS, 0, _supply_exec, STM_NULL);
 			}
+#endif
 			break;
 		default:
 			break;
 		}
+		last_status = supply->detect.state.effective;
 		supply->detect.state.avtice = 0;/* clear status flag */
     }
 }

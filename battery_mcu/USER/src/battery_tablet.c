@@ -2,7 +2,6 @@
 
 #include <battery_tablet.h>
 #include <debug.h>
-#include <sys_pin_def.h>
 #include <sys_common.h>
 #include <stm32_timer.h>
 

@@ -29,8 +29,8 @@ static void sys_exti_init(void)
     exti_cfg.EXTI_LineCmd   = ENABLE;
     EXTI_Init(&exti_cfg);
 
-	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOA, EXTI_PinSource12);
-    exti_cfg.EXTI_Line      = EXTI_Line12;
+	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOA, SUPPLY_EXIT_SOURCE);
+    exti_cfg.EXTI_Line      = SUPPLY_EXTI_LINE;
     exti_cfg.EXTI_Mode      = EXTI_Mode_Interrupt;
     exti_cfg.EXTI_Trigger   = EXTI_Trigger_Rising_Falling;
     exti_cfg.EXTI_LineCmd   = ENABLE;
