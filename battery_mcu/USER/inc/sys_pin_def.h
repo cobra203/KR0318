@@ -16,7 +16,7 @@
 #define EXTI_RANGE_4_15		1
 /*************** branch item define end *************/
 
-#define PLATFORM_TYPE		PLATFORM_KR0302
+#define PLATFORM_TYPE		PLATFORM_KR0318
 
 #define STAT_PIN			GPIO_Pin_2      /* fixed */
 #define STAT_GPIO           GPIOA

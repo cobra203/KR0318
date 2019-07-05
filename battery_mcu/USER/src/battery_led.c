@@ -51,7 +51,7 @@ static void _led_next_step(void *args)
 	int id = (int)args;
 
 	leds.set(&leds, id++, LED_STATUS_CONNECT);
-	if(LED_ID_BUTT == id) {
+	if(LED_ID_BUTT <= id) {
 		timer_task(&leds.task_id, TMR_ONCE, 1000, 0, _led_server_start, (void *)1000);
 	}
 	else {
@@ -82,26 +82,28 @@ static void _led_server_start(void *args)
 	}
 #endif
 
-	if(power < 25) {
+	if(power <= 5) {
 		if(!leds.vbat_status.charge) {
 			timer_task(&leds.task_id, TMR_ONCE, 200, 0, _led_vbat_low, STM_NULL);
 			return;
 		}
 	}
+
+	if(power < 10) {
+		if(!leds.vbat_status.charge) {
+			leds.set(&leds, LED_ID_RED, LED_STATUS_CONNECT);
+		}
+	}
 	else {
 		leds.set(&leds, LED_ID_COM1, LED_STATUS_CONNECT);
-		next++;
 	}
 
-	if(power >= 50) {
+	if(power >= 40) {
 		leds.set(&leds, LED_ID_COM2, LED_STATUS_CONNECT);
-		next++;
 	}
 
-	if(power >= 75) {
-		if(!leds.vbat_status.charge) {
-			leds.set(&leds, LED_ID_COM3, LED_STATUS_CONNECT);
-		}
+	if(power >= 70) {
+		leds.set(&leds, LED_ID_COM3, LED_STATUS_CONNECT);
 	}
 
 	if(leds.vbat_status.charge) {
