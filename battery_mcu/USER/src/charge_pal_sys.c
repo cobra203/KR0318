@@ -52,46 +52,68 @@ void cp_sys_handle(void *args)
 	CP_SYS_S	*cp_sys = (CP_SYS_S *)args;
 	uint8_t		task = TIMERS_NUM;
 
-	if(STM_TRUE == cp_sys->sys_evt.tablet_into) {
-#if (LED_CLOSE_WHEN_OUT_OF_CHARGE == STM_TRUE)
-		cp_sys->leds->restart();
+	/* 1. supply event */
+	if(STM_TRUE == cp_sys->sys_evt.supply_updata) {
+
+		/* ignore when sys_status had cut_off */
+		if(STM_FALSE == cp_sys->sys_status.cut_off) {
+#if (SUPPLY_FUNC_MODE == SUPPLY_MODE_BUTTON)
+			cp_sys->supply->handle(SUPPLY_EVENT_SUPPLY_SWTICH);
+#elif (SUPPLY_FUNC_MODE == SUPPLY_MODE_DETECT)
+			if(STM_TRUE == cp_sys->supply->allowable) {	
+				cp_sys->supply->handle(SUPPLY_EVENT_SUPPLY_ENABLE_DELAY);
+			}
+			else {
+				cp_sys->supply->handle(SUPPLY_EVENT_SUPPLY_DISABLE);
+			}
 #endif
+		}
+		cp_sys->sys_evt.supply_updata = STM_FALSE;
+	}
+	
+	/* 1. tablet event */
+	if(STM_TRUE == cp_sys->sys_evt.tablet_into) {
+		cp_sys->sys_status.tablet = STM_TRUE;
+		cp_sys->leds->tab_restart();
 		cp_sys->sys_evt.tablet_into = STM_FALSE;
 	}
 
 	if(STM_TRUE == cp_sys->sys_evt.tablet_out_of) {
-#if (LED_CLOSE_WHEN_OUT_OF_CHARGE == STM_TRUE)
-		cp_sys->leds->stop();
-#endif
+		cp_sys->sys_status.tablet = STM_FALSE;
+		cp_sys->leds->tab_restart();
 		cp_sys->sys_evt.tablet_out_of = STM_FALSE;
 	}
 
+	/* 2. charge event */
 	if(STM_TRUE == cp_sys->sys_evt.charge_into) {
-		cp_sys->leds->vbat_status.charge = STM_TRUE;
-#if (LED_CLOSE_WHEN_OUT_OF_CHARGE == STM_TRUE)
-		if(STM_TRUE == cp_sys->tablet->work) {
-			cp_sys->leds->restart();
+		cp_sys->sys_status.charge = STM_TRUE;
+		if(STM_TRUE == cp_sys->sys_status.cut_off) {
+			cp_sys->sys_status.cut_off = STM_FALSE;
+			if(STM_TRUE == cp_sys->supply->allowable) {
+				cp_sys->supply->handle(SUPPLY_EVENT_SUPPLY_ENABLE);
+			}
 		}
-#else
-		cp_sys->leds->restart();
-#endif
+		cp_sys->leds->bat_restart();
 		cp_sys->sys_evt.charge_into = STM_FALSE;
 	}
 
 	if(STM_TRUE == cp_sys->sys_evt.charge_out_of) {
-		cp_sys->leds->vbat_status.charge = STM_FALSE;
-#if (LED_CLOSE_WHEN_OUT_OF_CHARGE == STM_TRUE)
-		if(STM_TRUE == cp_sys->tablet->work) {
-			cp_sys->leds->restart();
-		}
-#else
-		cp_sys->leds->restart();
-#endif
+		cp_sys->sys_status.charge = STM_FALSE;
+		cp_sys->leds->bat_restart();
 		cp_sys->sys_evt.charge_out_of = STM_FALSE;
 	}
 
+	/* 3. power event */
 	if(STM_TRUE == cp_sys->sys_evt.vbat_update) {
-		cp_sys->leds->vbat_status.power = cp_sys->power->vbat_power;
+		cp_sys->sys_status.power = cp_sys->power->vbat_power;
+#if (SUPPLY_FUNC_MODE == SUPPLY_MODE_DETECT)
+		if(STM_FALSE == cp_sys->sys_status.charge
+				&& cp_sys->sys_status.power <= POWER_CORRECTION_0
+				&& STM_FALSE == cp_sys->sys_status.cut_off) {
+			cp_sys->sys_status.cut_off = STM_TRUE;
+			cp_sys->supply->handle(SUPPLY_EVENT_SUPPLY_DISABLE);
+		}
+#endif
 		cp_sys->sys_evt.vbat_update = STM_FALSE;
 	}
 	

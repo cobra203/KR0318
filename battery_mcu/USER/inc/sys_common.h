@@ -24,15 +24,39 @@
 #define		STM_BOOL		uint8_t
 
 #if (PLATFORM_TYPE == PLATFORM_KR0302)
-#define		CUT_OFF_VOLTAGE	70000/57
-#define		FULL_VOLTAGE	84000/57
+#define		CUT_OFF_VOLTAGE		(70000/57)
+#define		FULL_VOLTAGE		(84000/57)
 #else
-#define		CUT_OFF_VOLTAGE	96000/57
-#define		FULL_VOLTAGE	126000/57
+#define		CUT_OFF_VOLTAGE		(96000/57)
+#define		FULL_VOLTAGE		(126000/57)
 #endif
 
-#define		CHARGE_VOLTAGE_DETECT_ENABLE		STM_FALSE
-#define		LED_CLOSE_WHEN_OUT_OF_CHARGE		STM_FALSE
+#define		CORRECTION_VOLTAGE_TABLET	(5000/57)
+#define		CORRECTION_VOLTAGE_CHARGE	(4000/57)
+#define		NINETY_RATIO				5
+#define		NINETY_VOLTAGE				(FULL_VOLTAGE -  CORRECTION_VOLTAGE_CHARGE/NINETY_RATIO)
+
+/********* CORRECTION ***********/
+/*	0%	= 10.32V, power = 24	*/
+/*	5%	= 10.51V, power = 30	*/
+/*	25%	= 10.98V, power = 46	*/
+/*	50%	= 11.53V, power = 64	*/
+/*	75%	= 12.15V, power = 85	*/
+/********************************/
+
+#if (PLATFORM_TYPE == PLATFORM_KR0302)
+#define		POWER_CORRECTION_0		0
+#define		POWER_CORRECTION_5		5
+#define		POWER_CORRECTION_25		25
+#define		POWER_CORRECTION_50		50
+#define		POWER_CORRECTION_75		76
+#else
+#define		POWER_CORRECTION_0		24
+#define		POWER_CORRECTION_5		30
+#define		POWER_CORRECTION_25		46
+#define		POWER_CORRECTION_50		64
+#define		POWER_CORRECTION_75		85
+#endif
 
 #ifdef __cplusplus
 }

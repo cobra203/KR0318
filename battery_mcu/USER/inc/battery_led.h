@@ -10,6 +10,7 @@
 
 #define RED_LED_NUM 1
 #define COM_LED_NUM	3
+#define TAB_LED_NUM 3
 
 typedef enum led_index_e
 {
@@ -17,6 +18,9 @@ typedef enum led_index_e
 	LED_ID_COM1,
 	LED_ID_COM2,
 	LED_ID_COM3,
+	LED_ID_TAB1,
+	LED_ID_TAB2,
+	LED_ID_TAB3,
 	LED_ID_BUTT,
 } LED_INDEX_E;
 
@@ -27,25 +31,17 @@ typedef enum led_status_e
     LED_STATUS_PAIRING,
 } LED_STATUS_E;
 
-typedef struct vbat_status_s
-{
-	uint16_t		charge		:1;
-	uint16_t		update		:1;
-	uint16_t					:7;
-    uint16_t		power		:7;
-	
-} VBAT_STATUS_S;
-
 typedef struct battery_led_s
 {
     CP_SYS_S		*cp_sys;
-	VBAT_STATUS_S	vbat_status;
-	uint8_t			task_id;
+	uint8_t			task_battery_id;
+	uint8_t			task_tablet_id;
     STM32_LED_S     red_led;
     STM32_LED_S     com_led[COM_LED_NUM];
+	STM32_LED_S     tab_led[TAB_LED_NUM];
     void            (*set)		(struct battery_led_s *, uint8_t, LED_STATUS_E);
-	void			(*restart)	(void);
-	void			(*stop)		(void);
+	void			(*bat_restart)	(void);
+	void			(*tab_restart)	(void);
 } BATTERY_LED_S;
 
 

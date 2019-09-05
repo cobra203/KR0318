@@ -60,17 +60,27 @@
 #define LED_PIN_COM1        GPIO_Pin_10
 #define LED_PIN_COM2        GPIO_Pin_11
 #define LED_PIN_COM3        GPIO_Pin_9
+#define LED_PIN_TAB1		GPIO_Pin_4
+#define LED_PIN_TAB2		GPIO_Pin_5
+#define LED_PIN_TAB3		GPIO_Pin_6
 #elif (PLATFORM_TYPE == PLATFORM_KR0302)
 #define LED_PIN_RED			GPIO_Pin_15
 #define LED_PIN_COM1        GPIO_Pin_10
 #define LED_PIN_COM2        GPIO_Pin_11
 #define LED_PIN_COM3        GPIO_Pin_9
+#define LED_PIN_TAB1		GPIO_Pin_4
+#define LED_PIN_TAB2		GPIO_Pin_5
+#define LED_PIN_TAB3		GPIO_Pin_6
 #endif
 
 #define LED_GPIO_RED		GPIOA
 #define LED_GPIO_COM1       GPIOA
 #define LED_GPIO_COM2       GPIOA
 #define LED_GPIO_COM3       GPIOA
+#define LED_GPIO_TAB1		GPIOA
+#define LED_GPIO_TAB2		GPIOA
+#define LED_GPIO_TAB3		GPIOA
+
 
 #ifdef __cplusplus
 }

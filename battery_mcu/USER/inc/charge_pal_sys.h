@@ -15,12 +15,24 @@ typedef struct sys_evt_s
 	uint8_t tablet_into			:1;
     uint8_t tablet_out_of		:1;
     uint8_t vbat_update			:1;
-    uint8_t						:3;
+	uint8_t	supply_updata		:1;
+    uint8_t						:2;
 } SYS_EVT_S;
+
+typedef struct sys_status_s
+{
+	uint16_t		charge		:1;
+	uint16_t		tablet		:1;
+	uint16_t		cut_off		:1;
+	uint16_t					:6;
+    uint16_t		power		:7;
+	
+} SYS_STATUS_S;
 
 typedef struct charge_pal_sys_s
 {
     SYS_EVT_S               sys_evt;
+	SYS_STATUS_S			sys_status;
 	struct battery_tablet_s	*tablet;
     struct battery_stat_s	*stat;
     struct battery_led_s    *leds;
