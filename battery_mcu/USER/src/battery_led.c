@@ -17,10 +17,15 @@ static LED_GPIO_PIN_S led_table_id_transform[RED_LED_NUM + COM_LED_NUM + TAB_LED
     {LED_GPIO_RED,	LED_PIN_RED},
     {LED_GPIO_COM1,	LED_PIN_COM1},
     {LED_GPIO_COM2,	LED_PIN_COM2},
-    {LED_GPIO_COM2,	LED_PIN_COM3},
-    {LED_GPIO_TAB1,	LED_PIN_TAB1},
-    {LED_GPIO_TAB2,	LED_PIN_TAB2},
-    {LED_GPIO_TAB3,	LED_PIN_TAB3},
+    {LED_GPIO_COM3,	LED_PIN_COM3},
+#if (PLATFORM_TYPE == PLATFORM_KR0302)
+	{LED_GPIO_COM4,	LED_PIN_COM4},
+    {LED_GPIO_COM5,	LED_PIN_COM5},
+#elif (PLATFORM_TYPE == PLATFORM_KR0318)
+	{LED_GPIO_TAB1, LED_PIN_TAB1},
+	{LED_GPIO_TAB2, LED_PIN_TAB2},
+	{LED_GPIO_TAB3, LED_PIN_TAB3},
+#endif
 };
 
 static void _led_id_transform(uint8_t id, uint16_t *pin, GPIO_TypeDef **port)
@@ -81,12 +86,31 @@ static void _led_battery_change_show_start(void *args)
 	uint16_t	power	= cp_sys->sys_status.power;
 	LED_INDEX_E	led_start_id = LED_ID_COM1;
 
+#if (PLATFORM_TYPE == PLATFORM_KR0318)
+
 	if(power >= POWER_CORRECTION_25) {
 		led_start_id = LED_ID_COM2;
 	}
 	if(power >= POWER_CORRECTION_50) {
 		led_start_id = LED_ID_COM3;
 	}
+
+#elif (PLATFORM_TYPE == PLATFORM_KR0302)
+
+	if(power >= POWER_CORRECTION_16) {
+		led_start_id = LED_ID_COM2;
+	}
+	if(power >= POWER_CORRECTION_33) {
+		led_start_id = LED_ID_COM3;
+	}
+	if(power >= POWER_CORRECTION_50) {
+		led_start_id = LED_ID_COM4;
+	}
+	if(power >= POWER_CORRECTION_66) {
+		led_start_id = LED_ID_COM5;
+	}
+
+#endif
 
 	if(cp_sys->sys_status.charge) {
 		timer_task(&leds.task_battery_id, TMR_ONCE, 500, 0, _led_battery_change_show_next, (void *)led_start_id);
@@ -100,11 +124,11 @@ static void _led_battery_power_show(void *args)
 {
 	CP_SYS_S	*cp_sys = leds.cp_sys;
 	uint16_t	power	= cp_sys->sys_status.power;
+	int i = 0;
 
-	leds.set(&leds, LED_ID_RED, LED_STATUS_CLOSED);
-	leds.set(&leds, LED_ID_COM1, LED_STATUS_CLOSED);
-	leds.set(&leds, LED_ID_COM2, LED_STATUS_CLOSED);
-	leds.set(&leds, LED_ID_COM3, LED_STATUS_CLOSED);
+	for(i = 0; i < RED_LED_NUM + COM_LED_NUM; i++) {
+		leds.set(&leds, LED_ID_RED + i, LED_STATUS_CLOSED);
+    }
 
 	/* 0% ~ 5% */
 	if(power <= POWER_CORRECTION_5 && !cp_sys->sys_status.charge) {
@@ -112,6 +136,7 @@ static void _led_battery_power_show(void *args)
 		return;
 	}
 
+#if (PLATFORM_TYPE == PLATFORM_KR0318)
 	/* 5% ~ 25% */
 	if(power < POWER_CORRECTION_25 && !cp_sys->sys_status.charge) {
 		leds.set(&leds, LED_ID_RED, LED_STATUS_CONNECT);
@@ -131,6 +156,39 @@ static void _led_battery_power_show(void *args)
 	if(power >= POWER_CORRECTION_75 && !cp_sys->sys_status.charge) {
 		leds.set(&leds, LED_ID_COM3, LED_STATUS_CONNECT);
 	}
+
+#elif (PLATFORM_TYPE == PLATFORM_KR0302)
+	/* 5% ~ 16% */
+	if(power < POWER_CORRECTION_16 && !cp_sys->sys_status.charge) {
+		leds.set(&leds, LED_ID_RED, LED_STATUS_CONNECT);
+	}
+
+	/* 16% ~ 33% */
+	if(power >= POWER_CORRECTION_16) {
+		leds.set(&leds, LED_ID_COM1, LED_STATUS_CONNECT);
+	}
+
+	/* 33% ~ 50% */
+	if(power >= POWER_CORRECTION_33) {
+		leds.set(&leds, LED_ID_COM2, LED_STATUS_CONNECT);
+	}
+
+	/* 50% ~ 66% */
+	if(power >= POWER_CORRECTION_50) {
+		leds.set(&leds, LED_ID_COM3, LED_STATUS_CONNECT);
+	}
+
+	/* 66% ~ 83% */
+	if(power >= POWER_CORRECTION_66) {
+		leds.set(&leds, LED_ID_COM4, LED_STATUS_CONNECT);
+	}
+
+	/* 83% ~ 100% */
+	if(power >= POWER_CORRECTION_83 && !cp_sys->sys_status.charge) {
+		leds.set(&leds, LED_ID_COM5, LED_STATUS_CONNECT);
+	}
+
+#endif
 
 	if(cp_sys->sys_status.charge) {
 		timer_task(&leds.task_battery_id, TMR_ONCE, 500, 0, _led_battery_change_show_start, STM_NULL);
@@ -164,10 +222,11 @@ static void _led_tablet_change_show_start(void *args)
 {
 	CP_SYS_S	*cp_sys = leds.cp_sys;
 	LED_INDEX_E	led_start_id = LED_ID_TAB1;
+	int i = 0;
 
-	leds.set(&leds, LED_ID_TAB1, LED_STATUS_CLOSED);
-	leds.set(&leds, LED_ID_TAB2, LED_STATUS_CLOSED);
-	leds.set(&leds, LED_ID_TAB3, LED_STATUS_CLOSED);
+	for(i = 0; i < TAB_LED_NUM; i++) {
+		leds.set(&leds, LED_ID_TAB1 + i, LED_STATUS_CLOSED);
+    }
 
 	if(cp_sys->sys_status.tablet) {
 		timer_task(&leds.task_tablet_id, TMR_ONCE, 1000, 0, _led_tablet_change_show_next, (void *)led_start_id);
@@ -191,24 +250,23 @@ static void _led_tablet_server_start(void *args)
 
 static void _led_battery_restart(void)
 {
-	CP_SYS_S	*cp_sys = leds.cp_sys;
+	int i = 0;
 
 	timer_free(&leds.task_battery_id);
-	leds.set(&leds, LED_ID_RED, LED_STATUS_CLOSED);
-	leds.set(&leds, LED_ID_COM1, LED_STATUS_CLOSED);
-	leds.set(&leds, LED_ID_COM2, LED_STATUS_CLOSED);
-	leds.set(&leds, LED_ID_COM3, LED_STATUS_CLOSED);
+	for(i = 0; i < RED_LED_NUM + COM_LED_NUM; i++) {
+		leds.set(&leds, LED_ID_RED + i, LED_STATUS_CLOSED);
+    }
 	_led_register(&leds.task_battery_id, _led_battery_server_start);
 }
 
 static void _led_tablet_restart(void)
 {
-	CP_SYS_S	*cp_sys = leds.cp_sys;
+	int i = 0;
 
 	timer_free(&leds.task_tablet_id);
-	leds.set(&leds, LED_ID_TAB1, LED_STATUS_CLOSED);
-	leds.set(&leds, LED_ID_TAB2, LED_STATUS_CLOSED);
-	leds.set(&leds, LED_ID_TAB3, LED_STATUS_CLOSED);
+	for(i = 0; i < TAB_LED_NUM; i++) {
+		leds.set(&leds, LED_ID_TAB1 + i, LED_STATUS_CLOSED);
+    }
 	_led_register(&leds.task_tablet_id, _led_tablet_server_start);
 }
 
@@ -238,13 +296,17 @@ void led_init(CP_SYS_S *cp_sys)
 		leds.set(&leds, RED_LED_NUM + i, LED_STATUS_CLOSED);
     }
 
+#if (PLATFORM_TYPE == PLATFORM_KR0318)
 	for(i = 0; i < TAB_LED_NUM; i++) {
 		_led_id_transform(RED_LED_NUM + COM_LED_NUM + i, &pin, &port);
         leds.tab_led[i].init = stm32_led_init;
         leds.tab_led[i].init(&leds.tab_led[i], pin, port);
 		leds.set(&leds, RED_LED_NUM + COM_LED_NUM + i, LED_STATUS_CLOSED);
     }
+#endif
 
 	_led_register(&leds.task_battery_id, _led_battery_server_start);
+#if (PLATFORM_TYPE == PLATFORM_KR0318)
 	_led_register(&leds.task_tablet_id, _led_tablet_server_start);
+#endif
 }

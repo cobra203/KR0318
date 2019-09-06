@@ -8,16 +8,16 @@
 #include <charge_pal_sys.h>
 #include <stm32_led.h>
 
-#define RED_LED_NUM 1
-#define COM_LED_NUM	3
-#define TAB_LED_NUM 3
-
 typedef enum led_index_e
 {
 	LED_ID_RED,
 	LED_ID_COM1,
 	LED_ID_COM2,
 	LED_ID_COM3,
+#if (PLATFORM_TYPE == PLATFORM_KR0302)
+	LED_ID_COM4,
+	LED_ID_COM5,
+#endif
 	LED_ID_TAB1,
 	LED_ID_TAB2,
 	LED_ID_TAB3,
@@ -38,7 +38,9 @@ typedef struct battery_led_s
 	uint8_t			task_tablet_id;
     STM32_LED_S     red_led;
     STM32_LED_S     com_led[COM_LED_NUM];
+#if (PLATFORM_TYPE == PLATFORM_KR0318)
 	STM32_LED_S     tab_led[TAB_LED_NUM];
+#endif
     void            (*set)		(struct battery_led_s *, uint8_t, LED_STATUS_E);
 	void			(*bat_restart)	(void);
 	void			(*tab_restart)	(void);

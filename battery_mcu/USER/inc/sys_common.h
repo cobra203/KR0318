@@ -44,18 +44,30 @@
 /*	75%	= 12.15V, power = 85	*/
 /********************************/
 
-#if (PLATFORM_TYPE == PLATFORM_KR0302)
-#define		POWER_CORRECTION_0		0
-#define		POWER_CORRECTION_5		5
-#define		POWER_CORRECTION_25		25
-#define		POWER_CORRECTION_50		50
-#define		POWER_CORRECTION_75		76
-#else
+#if (PLATFORM_TYPE == PLATFORM_KR0318)
 #define		POWER_CORRECTION_0		24
 #define		POWER_CORRECTION_5		30
 #define		POWER_CORRECTION_25		46
 #define		POWER_CORRECTION_50		64
 #define		POWER_CORRECTION_75		85
+#else
+#define		POWER_CORRECTION_0		0
+#define		POWER_CORRECTION_5		5
+#define		POWER_CORRECTION_16		10
+#define		POWER_CORRECTION_33		20
+#define		POWER_CORRECTION_50		40
+#define		POWER_CORRECTION_66		60
+#define		POWER_CORRECTION_83		80
+#endif
+
+#if (PLATFORM_TYPE == PLATFORM_KR0318)
+#define RED_LED_NUM 1
+#define COM_LED_NUM	3
+#define TAB_LED_NUM 3
+#else
+#define RED_LED_NUM 1
+#define COM_LED_NUM	5
+#define TAB_LED_NUM 0
 #endif
 
 #ifdef __cplusplus
