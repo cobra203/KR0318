@@ -31,7 +31,9 @@ static uint8_t _power_voltage_to_level(int16_t voltage)
 
 static void _power_voltage_correction_tablet(int16_t *voltage)
 {
+#if FUNC_TABLET
 	*voltage += CORRECTION_VOLTAGE_TABLET;
+#endif
 }
 
 static void _power_voltage_correction_charge(int16_t *voltage)
@@ -41,8 +43,8 @@ static void _power_voltage_correction_charge(int16_t *voltage)
 		return;
 	}
 	
-	if(NINETY_VOLTAGE < *voltage) {
-		*voltage -= (NINETY_RATIO * (FULL_VOLTAGE - *voltage));
+	if(CHANGE_NINETY_VOLTAGE < *voltage) {
+		*voltage -= (CHANGE_NINETY_RATIO * (FULL_VOLTAGE - *voltage));
 		return;
 	}
 

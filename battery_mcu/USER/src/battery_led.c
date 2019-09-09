@@ -21,7 +21,8 @@ static LED_GPIO_PIN_S led_table_id_transform[RED_LED_NUM + COM_LED_NUM + TAB_LED
 #if (PLATFORM_TYPE == PLATFORM_KR0302)
 	{LED_GPIO_COM4,	LED_PIN_COM4},
     {LED_GPIO_COM5,	LED_PIN_COM5},
-#elif (PLATFORM_TYPE == PLATFORM_KR0318)
+#endif
+#if FUNC_TABLET
 	{LED_GPIO_TAB1, LED_PIN_TAB1},
 	{LED_GPIO_TAB2, LED_PIN_TAB2},
 	{LED_GPIO_TAB3, LED_PIN_TAB3},
@@ -86,7 +87,7 @@ static void _led_battery_change_show_start(void *args)
 	uint16_t	power	= cp_sys->sys_status.power;
 	LED_INDEX_E	led_start_id = LED_ID_COM1;
 
-#if (PLATFORM_TYPE == PLATFORM_KR0318)
+#if (PLATFORM_TYPE == PLATFORM_KR0318) || (PLATFORM_TYPE == PLATFORM_KR2019)
 
 	if(power >= POWER_CORRECTION_25) {
 		led_start_id = LED_ID_COM2;
@@ -124,7 +125,7 @@ static void _led_battery_power_show(void *args)
 {
 	CP_SYS_S	*cp_sys = leds.cp_sys;
 	uint16_t	power	= cp_sys->sys_status.power;
-	int i = 0;
+	volatile int i = 0;
 
 	for(i = 0; i < RED_LED_NUM + COM_LED_NUM; i++) {
 		leds.set(&leds, LED_ID_RED + i, LED_STATUS_CLOSED);
@@ -136,7 +137,7 @@ static void _led_battery_power_show(void *args)
 		return;
 	}
 
-#if (PLATFORM_TYPE == PLATFORM_KR0318)
+#if (PLATFORM_TYPE == PLATFORM_KR0318) || (PLATFORM_TYPE == PLATFORM_KR2019)
 	/* 5% ~ 25% */
 	if(power < POWER_CORRECTION_25 && !cp_sys->sys_status.charge) {
 		leds.set(&leds, LED_ID_RED, LED_STATUS_CONNECT);
@@ -296,7 +297,7 @@ void led_init(CP_SYS_S *cp_sys)
 		leds.set(&leds, RED_LED_NUM + i, LED_STATUS_CLOSED);
     }
 
-#if (PLATFORM_TYPE == PLATFORM_KR0318)
+#if FUNC_TABLET
 	for(i = 0; i < TAB_LED_NUM; i++) {
 		_led_id_transform(RED_LED_NUM + COM_LED_NUM + i, &pin, &port);
         leds.tab_led[i].init = stm32_led_init;
@@ -306,7 +307,7 @@ void led_init(CP_SYS_S *cp_sys)
 #endif
 
 	_led_register(&leds.task_battery_id, _led_battery_server_start);
-#if (PLATFORM_TYPE == PLATFORM_KR0318)
+#if FUNC_TABLET
 	_led_register(&leds.task_tablet_id, _led_tablet_server_start);
 #endif
 }

@@ -160,12 +160,14 @@ void EXTI2_3_IRQHandler(void)
         stat_itc();
         EXTI_ClearITPendingBit(EXTI_Line2);
     }
-#if (SUPPLY_EXTI_RANGE == EXTI_RANGE_2_3)
+
+#if FUNC_SUPPLY && (SUPPLY_EXTI_RANGE == EXTI_RANGE_2_3)
 	if(EXTI_GetITStatus(SUPPLY_EXTI_LINE) != RESET) {
         supply_itc();
         EXTI_ClearITPendingBit(SUPPLY_EXTI_LINE);
     }
 #endif
+
 }
 
 void EXTI4_15_IRQHandler(void)
@@ -185,12 +187,14 @@ void EXTI4_15_IRQHandler(void)
         tablet_itc();
         EXTI_ClearITPendingBit(EXTI_Line8);
     }
-#if (SUPPLY_EXTI_RANGE == EXTI_RANGE_4_15)
+
+#if FUNC_SUPPLY && (SUPPLY_EXTI_RANGE == EXTI_RANGE_4_15)
 	if(EXTI_GetITStatus(SUPPLY_EXTI_LINE) != RESET) {
         supply_itc();
         EXTI_ClearITPendingBit(SUPPLY_EXTI_LINE);
     }
 #endif
+
 }
 #if 0
 void SPI1_IRQHandler(void)

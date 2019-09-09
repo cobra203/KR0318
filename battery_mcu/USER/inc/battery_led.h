@@ -38,7 +38,7 @@ typedef struct battery_led_s
 	uint8_t			task_tablet_id;
     STM32_LED_S     red_led;
     STM32_LED_S     com_led[COM_LED_NUM];
-#if (PLATFORM_TYPE == PLATFORM_KR0318)
+#if FUNC_TABLET
 	STM32_LED_S     tab_led[TAB_LED_NUM];
 #endif
     void            (*set)		(struct battery_led_s *, uint8_t, LED_STATUS_E);

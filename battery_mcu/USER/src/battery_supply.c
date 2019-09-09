@@ -7,16 +7,19 @@
 
 static BATTERY_SUPPLY_S	battery_supply;
 
-
 static void _supply_access(void *args)
 {
+#if FUNC_SUPPLY
 	int enable = (int)args;
+
 	if(enable) {
 		GPIO_SetBits(SUPPLY_GPIO, SUPPLY_PIN);
 	}
 	else {
 		GPIO_ResetBits(SUPPLY_GPIO, SUPPLY_PIN);
 	}
+#endif
+
 }
 
 static void _supply_handle(uint8_t event)
@@ -31,7 +34,9 @@ static void _supply_handle(uint8_t event)
 		break;
 
 	case SUPPLY_EVENT_SUPPLY_ENABLE_DELAY:
+#if FUNC_SUPPLY
 		timer_task(&battery_supply.task, TMR_ONCE, SUPPLY_DELAY_MS, 0, _supply_access, (void *)STM_TRUE);
+#endif
 		break;
 
 	case SUPPLY_EVENT_SUPPLY_DISABLE:
@@ -91,6 +96,7 @@ static void _supply_process(BATTERY_SUPPLY_S *supply)
 
 static void _supply_pin_detect(void)
 {
+#if FUNC_SUPPLY
 	uint16_t gpio_vol;
 
 	if(battery_supply.detect.detect_count) {
@@ -98,6 +104,7 @@ static void _supply_pin_detect(void)
 		battery_supply.detect.state.press = (~gpio_vol) & SUPPLY_DET_PIN ? 1 : 0;
 		battery_supply.detect.detect_count--;
 	}
+#endif
 }
 
 static void _supply_server_start(void *args)
@@ -123,10 +130,9 @@ void supply_itc(void)
 }
 
 void supply_init(CP_SYS_S *cp_sys)
-{ 
+{
+#if FUNC_SUPPLY
     GPIO_InitTypeDef    init_struct = {0};
-
-    battery_supply.cp_sys		= cp_sys;
 
     init_struct.GPIO_Mode   = GPIO_Mode_IN;
     init_struct.GPIO_PuPd   = GPIO_PuPd_UP;
@@ -140,6 +146,9 @@ void supply_init(CP_SYS_S *cp_sys)
     init_struct.GPIO_OType  = GPIO_OType_PP;
     init_struct.GPIO_Pin    = SUPPLY_PIN;
     GPIO_Init(SUPPLY_GPIO, &init_struct);
+#endif
+
+	battery_supply.cp_sys		= cp_sys;
 
 	battery_supply.task = TIMERS_NUM;
 	battery_supply.allowable = STM_FALSE;
