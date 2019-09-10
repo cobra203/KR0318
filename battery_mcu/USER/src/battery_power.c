@@ -74,6 +74,8 @@ static int16_t _power_voltage_correction(uint16_t voltage)
 static void _power_vbat_get(BATTERY_POWER_S *power)
 {
 	static int16_t voltage = 0;
+	//static int test_times = 0;
+	//static int test_power = 0;
 
 	CP_SYS_S *cp_sys = power->cp_sys;
 	int i = 0;
@@ -87,9 +89,20 @@ static void _power_vbat_get(BATTERY_POWER_S *power)
 
 	voltage = _power_voltage_correction((uint16_t)(tmp_val/times));
 
-	power->vbat_power = _power_voltage_to_level(voltage);\
+	power->vbat_power = _power_voltage_to_level(voltage);
+	/*
+	power->vbat_power = test_power;
+	if(test_times == 0) {
+		test_times = 0;
+		if(test_power != 100)
+			test_power++;
+	}
+	else {
+		test_times++;
+	}
+	*/
 
-	DEBUG("VOL:%d, PWR:%d, %d\n", tmp_val/times, power_val, power->vbat_power);
+	DEBUG("VOL:%d, PWR:%d, %d\n", tmp_val/times, voltage, power->vbat_power);
 	cp_sys->sys_evt.vbat_update = STM_TRUE;
 }
 

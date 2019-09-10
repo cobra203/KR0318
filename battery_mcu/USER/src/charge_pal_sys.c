@@ -94,8 +94,9 @@ void cp_sys_handle(void *args)
 	/* 2. charge event */
 	if(STM_TRUE == cp_sys->sys_evt.charge_into) {
 		cp_sys->sys_status.charge = STM_TRUE;
-		if(STM_TRUE == cp_sys->sys_status.cut_off) {
+		if(cp_sys->supply && STM_TRUE == cp_sys->sys_status.cut_off) {
 			cp_sys->sys_status.cut_off = STM_FALSE;
+			DEBUG("SYS_STATUS: leave cut_off\n");
 			if(STM_TRUE == cp_sys->supply->allowable) {
 				cp_sys->supply->handle(SUPPLY_EVENT_SUPPLY_ENABLE);
 			}
@@ -114,10 +115,12 @@ void cp_sys_handle(void *args)
 	if(STM_TRUE == cp_sys->sys_evt.vbat_update) {
 		cp_sys->sys_status.power = cp_sys->power->vbat_power;
 #if (SUPPLY_FUNC_MODE == SUPPLY_MODE_DETECT)
-		if(STM_FALSE == cp_sys->sys_status.charge
+		if(cp_sys->supply
+				&& STM_FALSE == cp_sys->sys_status.charge
 				&& cp_sys->sys_status.power <= POWER_CORRECTION_0
 				&& STM_FALSE == cp_sys->sys_status.cut_off) {
 			cp_sys->sys_status.cut_off = STM_TRUE;
+			DEBUG("SYS_STATUS: cut_off\n");
 			cp_sys->supply->handle(SUPPLY_EVENT_SUPPLY_DISABLE);
 		}
 #endif
@@ -136,11 +139,11 @@ void cp_sys_register(void)
 
 void cp_sys_init(void)
 {
-    timer_init();
+	timer_init();
 	sys_exti_init();
-    
-    led_init(&cp_sys);
-    stat_init(&cp_sys);
+
+	led_init(&cp_sys);
+	stat_init(&cp_sys);
 #if FUNC_TABLET
 	tablet_init(&cp_sys);
 #endif

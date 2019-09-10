@@ -11,13 +11,13 @@
 
 #define PLATFORM_KR0318		0
 #define PLATFORM_KR0302		1
-#define PLATFORM_KR2019		2
+#define PLATFORM_KR2109		2
 
 #define EXTI_RANGE_2_3		0
 #define EXTI_RANGE_4_15		1
 /*************** branch item define end *************/
 
-#define PLATFORM_TYPE		PLATFORM_KR2019
+#define PLATFORM_TYPE		PLATFORM_KR0318
 
 #define STAT_PIN			GPIO_Pin_2      /* fixed */
 #define STAT_GPIO           GPIOA
@@ -73,7 +73,7 @@
 #define LED_PIN_COM3        GPIO_Pin_9
 #define LED_PIN_COM4		GPIO_Pin_5
 #define LED_PIN_COM5		GPIO_Pin_4
-#elif (PLATFORM_TYPE == PLATFORM_KR2019)
+#elif (PLATFORM_TYPE == PLATFORM_KR2109)
 #define LED_PIN_RED			GPIO_Pin_15
 #define LED_PIN_COM1        GPIO_Pin_10
 #define LED_PIN_COM2        GPIO_Pin_11
